@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ImageChange</title>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.3/p5.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.3/addons/p5.dom.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.3/addons/p5.sound.min.js"></script>
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+<!--Program służy jako generator animacji CSS oraz bada właściwości pierwotne zdjęcia (wysokość, szerokość oraz dostęp) przy czym implementacja img oznacza redukcję wysokość i szerokości do 200px | Program jest wersją wyłącznie desktopową, dlatego nie jest mobile friendly-->
+  <style>
+body{
+  margin:0;
+  padding: 0;
+  overflow: hidden;
+  font-family: sans-serif;
+  }
+  /*Dropzone sekcja **************/
+#dropzone {
+  position: absolute;
+  left: 50%;
+  top:5%;
+  transform: translate(-50%,0);
+  padding: 24px;
+  border-style: dashed;
+  font-size: 36pt;
+  width: 50%;
+  text-align: center;
+  transition:all .3s linear;
+  display: block;
+  }
+#dropzone:hover{
+  background-color: #3779E8;
+  cursor: pointer;
+  color:#fff;
+  }
+img{
+  position:absolute;
+  top: 50%;
+  left: 50%;
+  height:200px;
+  width:200px;
+  margin: -100px 0 0 -100px;
+  border: 1px solid black;
+  }
+.newimg{
+  display:none;
+  }
+ /*Koniec sekcji Dropzone***********/
+
+
+ /*Sekcja początkowy napis**********/
+#introduction{
+ position: absolute;
+ top:50%;
+ left:50%;
+ transform: translate(-50%,-50%);
+ font-size:50px;
+ width:50%;
+}
+.cursor {
+  opacity: 0;
+  transition: .2s;
+  }
+.cursor.active {
+  opacity: 1;
+  }
+ /*Koniec sekcji początkowy napis********/
+
+ /*Sekcja animacje************/
+.animation{
+  animation:rotate 1s linear;
+  }
+.animationSkew{
+  animation: skew 1s linear;
+  }
+.animationScaleUp{
+  animation: scaleUp 1s linear;
+  }
+.animationMatrix{
+  animation: matrix 1s linear;
+  }
+.animationScaleDown{
+  animation: scaleDown 1s linear;
+}
+/*Koniec sekcji animacje***********/
+
+/*Sekcja kontener animacji*********/
+#selectcontainer{
+  display:none;
+}
+.dropdown label.dropdown--label {
+  position: absolute;
+  top:5%;
+  left:50%;
+  transform: translate(-50%,0);
+  height: 45px;
+  width: 300px;
+  line-height: 46px;
+  display: inline-block;
+}
+.dropdown label.dropdown--label .dropdown--checkbox {
+  position: absolute;
+  left: -2000000px;
+}
+.dropdown label.dropdown--label .dropdown--text {
+  cursor: pointer;
+  border: 5px outset #5FBCE8;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px #dee5ff;
+  display: block;
+  width: 100%;
+  background: transparent;
+  color: #262e47;
+  font-weight: bold;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+}
+.dropdown label.dropdown--label .dropdown--text .dropdown--arrow {
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid #616d90;
+  border-bottom: 2px solid #616d90;
+  margin-left: auto;
+  transform: rotate(45deg);
+  transition: all ease-in 0.3s;
+  position: relative;
+  top: -2px;
+}
+.dropdown label.dropdown--label .dropdown--list {
+  position: absolute;
+  top: 100%;
+  left:100%;
+  right: 0;
+  width: 100%;
+  z-index: 5;
+  opacity: 0;
+  visibility: hidden;
+  top: 50%;
+  transition: all ease-out 0.3s;
+  box-shadow: 0px 14px 43px 0px #dee5ff;
+  background: transparent;
+  border-radius: 5px;
+  overflow: hidden;
+  max-height: 200px;
+  overflow-y: scroll;
+}
+.dropdown label.dropdown--label .dropdown--list::-webkit-scrollbar {
+  width: 10px;
+  color:#D1C000;
+}
+.dropdown label.dropdown--label .dropdown--list::-webkit-scrollbar-track {
+  background: transparent;
+  border-left: 1px solid #dee5ff;
+}
+.dropdown label.dropdown--label .dropdown--list::-webkit-scrollbar-thumb {
+  background: #dee5ff;
+  border-radius: 5px;
+}
+.dropdown label.dropdown--label .dropdown--list::-webkit-scrollbar-thumb:hover {
+  background: #cfd8f7;
+}
+.dropdown label.dropdown--label .dropdown--list ul {
+  padding: 0;
+  margin: 0;
+}
+.dropdown label.dropdown--label .dropdown--list ul li a {
+  white-space: nowrap;
+  text-decoration: none;
+  color: #E8BB00;
+  display: block;
+  padding: 5px 20px;
+}
+.dropdown label.dropdown--label .dropdown--list ul li a:hover {
+  background: #f7f9fd;
+}
+.dropdown label.dropdown--label .dropdown--checkbox:checked ~ .dropdown--list {
+  top: 120%;
+  opacity: 1;
+  visibility: visible;
+  transition: all ease-in 0.3s;
+}
+.dropdown label.dropdown--label .dropdown--checkbox:checked ~ .dropdown--text .dropdown--arrow {
+  transform: rotate(-135deg);
+  top: 5px;
+}
+.dropdown--list ul li{
+  transition: all .3s linear;
+}
+.dropdown--list ul li:hover{
+  background-color: #dee5ff;
+  cursor:pointer;
+}
+.rotate,.skew,.scaleUp,.matrix,.scaleDown{
+  border-left: 2px solid #4B86EB;
+  padding-left:5px;
+}
+.rotate:hover,.skew:hover,.scaleUp:hover,.matrix:hover,.scaleDown:hover{
+  padding-left: 10px;
+  border-width: 5px;
+}
+/*Koniec sekcji kontener animacji**********/
+
+/*Sekcja backgroud body*************/
+.area{
+    background: #54A1E8;  
+    background: -webkit-linear-gradient(to left, #8f94fb, #4e54c8);  
+    width: 100%;
+    height:100vh; 
+}
+.circles{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+.circles li{
+    position: absolute;
+    display: block;
+    list-style: none;
+    width: 20px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    animation: animate 25s linear infinite;
+    bottom: -150px;
+}
+.circles li:nth-child(1){
+    left: 25%;
+    width: 80px;
+    height: 80px;
+    animation-delay: 0s;
+}
+
+.circles li:nth-child(2){
+    left: 10%;
+    width: 20px;
+    height: 20px;
+    animation-delay: 2s;
+    animation-duration: 12s;
+}
+
+.circles li:nth-child(3){
+    left: 70%;
+    width: 20px;
+    height: 20px;
+    animation-delay: 4s;
+}
+
+.circles li:nth-child(4){
+    left: 40%;
+    width: 60px;
+    height: 60px;
+    animation-delay: 0s;
+    animation-duration: 18s;
+}
+
+.circles li:nth-child(5){
+    left: 65%;
+    width: 20px;
+    height: 20px;
+    animation-delay: 0s;
+}
+
+.circles li:nth-child(6){
+    left: 75%;
+    width: 110px;
+    height: 110px;
+    animation-delay: 3s;
+}
+
+.circles li:nth-child(7){
+    left: 35%;
+    width: 150px;
+    height: 150px;
+    animation-delay: 7s;
+}
+
+.circles li:nth-child(8){
+    left: 50%;
+    width: 25px;
+    height: 25px;
+    animation-delay: 15s;
+    animation-duration: 45s;
+}
+
+.circles li:nth-child(9){
+    left: 20%;
+    width: 15px;
+    height: 15px;
+    animation-delay: 2s;
+    animation-duration: 35s;
+}
+
+.circles li:nth-child(10){
+    left: 85%;
+    width: 150px;
+    height: 150px;
+    animation-delay: 0s;
+    animation-duration: 11s;
+}
+
+/*Sekcja navbar właściowsci img************/
+#container-nav{
+  display:none;
+}
+.nav {
+  -webkit-transition: left 0.5s ease;
+  -moz-transition: left 0.5s ease;
+  -ms-transition: left 0.5s ease;
+  -o-transition: left 0.5s ease;
+  transition: left 0.5s ease;
+  background: #3779E8;
+  color: white;
+  cursor: pointer;
+  font-size: 2rem;
+  height: 100vh;
+  left: -16rem;
+  padding: 6rem 2rem 2rem 2rem;
+  position: fixed;
+  top: 0;
+  width: 20rem;
+  z-index: 1;
+}
+
+.nav.expanded { left: 0; }
+
+.nav ul {
+  position: absolute;
+  top: 30%;
+  -webkit-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+  list-style: none;
+  margin-bottom:0px;
+  padding:0;
+  line-height: 50px;
+}
+.nav-toggle {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  cursor: pointer;
+  height: 2rem;
+  left: 2rem;
+  position: fixed;
+  top: 2rem;
+  width: 3.6rem;
+  z-index: 2;
+}
+
+.nav-toggle:hover { opacity: 0.8; }
+
+.nav-toggle .nav-toggle-bar, .nav-toggle .nav-toggle-bar::after,.nav-toggle .nav-toggle-bar::before {
+  position: absolute;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -ms-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  transition: all 0.5s ease;
+  background: white;
+  content: '';
+  height: 0.4rem;
+  width: 100%;
+}
+
+.nav-toggle .nav-toggle-bar { margin-top: 0; }
+
+.nav-toggle .nav-toggle-bar::after { margin-top: 0.8rem; }
+
+.nav-toggle .nav-toggle-bar::before { margin-top: -0.8rem; }
+
+.nav-toggle.expanded .nav-toggle-bar { background: transparent; }
+
+.nav-toggle.expanded .nav-toggle-bar::after, .nav-toggle.expanded .nav-toggle-bar::before {
+  background: white;
+  margin-top: 0px;
+}
+
+.nav-toggle.expanded .nav-toggle-bar::after {
+  -ms-transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+.nav-toggle.expanded .nav-toggle-bar::before {
+  -ms-transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+}
+.width,.size,.src{
+  font-size:30px;
+  transition: all .3s linear;
+  text-align: center;
+  display:block;
+  overflow:hidden;
+  width:100%;
+}
+
+.width:hover,.size:hover,.src:hover{
+  animation: border .3s linear;
+  animation-fill-mode:forwards;
+}
+/*Koniec sekcji navbar właściwości img***********/
+
+/*Sekcja popup****************/
+.popup{
+  display:none;
+  position: absolute;
+  top:50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  height: 50vh;
+  width: 50vw;
+  background-color: rgba(20, 165, 255, 0.609);
+  text-align: center;
+  line-height:50vh;
+  font-size:50px;
+  border-top-left-radius: 50px;
+  border-bottom-right-radius: 50px;
+  box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.75);
+}
+
+i{
+  position: absolute;
+  top:2%;
+  right:2%;
+  font-size: 50px;
+  cursor:pointer;
+  transition: .3s linear;
+}
+i::before{
+  content:"";
+}
+i:hover{
+  transform: rotate(360deg);
+  opacity:0.7;
+}
+/*Koniec sekcji popup**************/
+
+/*Sekcja keyframes**************/
+@keyframes border {
+  0%{
+  border-top:2px solid black;
+  border-width: 2px;
+  }
+  100%{
+  border-top:2px solid #E8BB00;
+  border-width: 4px;
+  }
+}
+
+@keyframes animate {
+
+0%{
+  transform: translateY(0) rotate(0deg);
+  opacity: 1;
+  border-radius: 0;
+}
+
+100%{
+  transform: translateY(-1000px) rotate(720deg);
+  opacity: 0;
+  border-radius: 50%;
+}
+}
+
+@keyframes rotate {
+0% { 
+  transform:rotate(0deg);   
+    }
+100% {
+  transform:rotate(360deg);  
+    }
+}
+
+@keyframes skew{
+0%{
+  transform: skewX();
+  }
+100%{
+  transform: skewX(30deg);
+  }
+}
+@keyframes scaleUp{
+0%{
+transform:scale()
+}
+100%{
+  transform:scale(1.5)
+}
+}
+@keyframes matrix{
+0%{
+  transform: matrix()
+  }
+100%{
+  transform: matrix(1, -0.3, 0, 1, 0, 0)
+  }
+}
+@keyframes scaleDown{
+0%{
+  transform: scale()
+  }
+100%{
+  transform: scale(0.9)
+  }
+}
+
+  </style>
+</head>
+
+<body>
+  <!--Sekcja początkowy napis-->
+  <div id="introduction">
+  <div class="mainText">
+      <span class="text"></span><span class="cursor">|</span>
+      </div>
+  <div class="Maincursor"></div>
+</div>
+  <!--Koniec sekcji początkowy napis-->
+
+  <!--Sekcja body backgroud-->
+<div class="area" >
+          <ul class="circles">
+                  <li></li>
+                  <li></li>
+                  <li></li>
+                  <li></li>
+                  <li></li>
+                  <li></li>
+                  <li></li>
+                  <li></li>
+                  <li></li>
+                  <li></li>
+          </ul>
+  </div >
+  <!--Koniec sekcji body backgroud-->
+
+  <!--Sekcja kontener animacji-->
+  <div id ="selectcontainer">
+    <div class="dropdown">
+        <label class="dropdown--label">
+          <input type="checkbox" class="dropdown--checkbox" />
+          <span class="dropdown--text">
+            Wybierz animację
+            <span class="dropdown--arrow"></span>
+          </span>
+          
+          <div class="dropdown--list">
+            <ul>
+              <li class="rotate"><h3>Rotate 360</h3></li>
+              <li class="skew"><h3>SkewX</h3></li>
+              <li class="scaleUp"><h3>ScaleUp</h3></li>
+              <li class="matrix"><h3>Matrix</h3></li>
+              <li class="scaleDown"><h3>ScaleDown</h3></li>
+            </ul>
+          </div>       
+        </label>
+      </div>
+    </div>
+    <!--koniec sekcji kontener animacji-->
+
+  <!--Sekcja dropzone-->
+  <h1 id ="dropzone">
+    Przeciągnij obraz
+  </h1>
+<!--Koniec sekcja dropzone-->
+
+<!--Sekcja właściwości img-->
+<div id="container-nav">
+<div class="nav-toggle">
+<div class="nav-toggle-bar"></div>
+  </div>
+  <nav class="nav">
+    <ul>
+      <li><h3 class="width">Szerokość img</h3><li>
+      <li><h3 class="size">Wysokość img</h3></li>
+      <li><h3 class="src">Dostęp do img</h3></li>
+    </ul>
+  </nav>
+</div>
+<!--koniec sekcji właściwości img-->
+
+<!--Sekcja popup-->
+<div class="popup"><i class="fas fa-times"></i></div>
+<script src="generator.js"></script>
+</body>
+</html>
